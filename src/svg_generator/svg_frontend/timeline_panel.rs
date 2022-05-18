@@ -435,7 +435,7 @@ fn render_arrows_string_external_events_version(
                 title = String::from("Copy");
                 (from_ro, to_ro)
             },
-            ExternalEvent::Move{ from: from_ro, to: to_ro } => {
+            ExternalEvent::Move{ from: from_ro, to: to_ro, valid: valid_ro } => {
                 title = String::from("Move");
                 (from_ro, to_ro)
             },

@@ -197,6 +197,7 @@ pub enum ExternalEvent {
     Move {
         from: Option<ResourceAccessPoint>,
         to: Option<ResourceAccessPoint>,
+        valid: Option<bool>
     },
     StaticBorrow {
         from: Option<ResourceAccessPoint>,
@@ -549,7 +550,7 @@ pub fn ResourceAccessPoint_extract (external_event : &ExternalEvent) -> (&Option
     let (from, to) = match external_event {
         ExternalEvent::Bind{from: from_ro, to: to_ro} => (from_ro, to_ro),
         ExternalEvent::Copy{from: from_ro, to: to_ro} => (from_ro, to_ro),
-        ExternalEvent::Move{from: from_ro, to: to_ro} => (from_ro, to_ro),
+        ExternalEvent::Move{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
         ExternalEvent::StaticBorrow{from: from_ro, to: to_ro} => (from_ro, to_ro),
         ExternalEvent::StaticDie{from: from_ro, to: to_ro} => (from_ro, to_ro),
         ExternalEvent::MutableBorrow{from: from_ro, to: to_ro} => (from_ro, to_ro),
@@ -844,7 +845,7 @@ impl Visualizable for VisualizationData {
 
         match event {
             // eg let ro_to = String::from("");
-            ExternalEvent::Move{from: from_ro, to: to_ro} => {
+            ExternalEvent::Move{from: from_ro, to: to_ro, valid: valid_ro} => {
                 maybe_append_event(self, &to_ro, Event::Acquire{from : from_ro.to_owned()}, &line_number);
                 maybe_append_event(self, &from_ro, Event::Move{to : to_ro.to_owned()}, &line_number);
             },
