@@ -254,35 +254,37 @@ pub fn add_events(
                 ExternalEvent::Bind{
                     from: get_resource(&vars, "None"),
                     to: get_resource(&vars, field[1]),
-                    valid: true
+                    valid: None
                 }, &(event.0 as usize)
             ),
             "Copy" => vd.append_external_event(
                 ExternalEvent::Copy{
                     from: get_resource(&vars, field[1]),
                     to: get_resource(&vars, field[2]),
-                    valid: true
+                    valid: None
                 }, &(event.0 as usize)
             ),
             "Move" => vd.append_external_event(
                 ExternalEvent::Move{
                     from: get_resource(&vars, field[1]),
                     to: get_resource(&vars, field[2]),
-                    valid: true
+                    valid: None
                 },
                 &(event.0 as usize)
             ),
             "StaticBorrow" => vd.append_external_event(
                 ExternalEvent::StaticBorrow{
                     from: get_resource(&vars, field[1]),
-                    to: get_resource(&vars, field[2])
+                    to: get_resource(&vars, field[2]),
+                    valid: None
                 },
                 &(event.0 as usize)
             ),
             "MutableBorrow" => vd.append_external_event(
                 ExternalEvent::MutableBorrow{
                     from: get_resource(&vars, field[1]),
-                    to: get_resource(&vars, field[2])
+                    to: get_resource(&vars, field[2]),
+                    valid: None
                 },
                 &(event.0 as usize)
             ),
@@ -303,14 +305,16 @@ pub fn add_events(
             "PassByStaticReference" => vd.append_external_event(
                 ExternalEvent::PassByStaticReference{
                     from: get_resource(&vars, field[1]),
-                    to: get_resource(&vars, field[2])
+                    to: get_resource(&vars, field[2]),
+                    valid: None
                 },
                 &(event.0 as usize)
             ),
             "PassByMutableReference" => vd.append_external_event(
                 ExternalEvent::PassByMutableReference{
                     from: get_resource(&vars, field[1]),
-                    to: get_resource(&vars, field[2])
+                    to: get_resource(&vars, field[2]),
+                    valid: None
                 },
                 &(event.0 as usize)
             ),
@@ -325,7 +329,7 @@ pub fn add_events(
                 ExternalEvent::Move{
                     from: get_resource(&vars, "None"),
                     to: get_resource(&vars, field[1]),
-                    valid: true
+                    valid: None
                 },
                 &(event.0 as usize)
             ),

@@ -439,7 +439,7 @@ fn render_arrows_string_external_events_version(
                 title = String::from("Move");
                 (from_ro, to_ro)
             },
-            ExternalEvent::StaticBorrow{ from: from_ro, to: to_ro } => {
+            ExternalEvent::StaticBorrow{ from: from_ro, to: to_ro, valid: valid_ro } => {
                 title = String::from("Immutable borrow");
                 (from_ro, to_ro)
             },
@@ -447,7 +447,7 @@ fn render_arrows_string_external_events_version(
                 title = String::from("Return immutably borrowed resource");
                 (from_ro, to_ro)
             },
-            ExternalEvent::MutableBorrow{ from: from_ro, to: to_ro } => {
+            ExternalEvent::MutableBorrow{ from: from_ro, to: to_ro, valid: valid_ro } => {
                 title = String::from("Mutable borrow");
                 (from_ro, to_ro)
             },
@@ -455,11 +455,11 @@ fn render_arrows_string_external_events_version(
                 title = String::from("Return mutably borrowed resource");
                 (from_ro, to_ro)
             },
-            ExternalEvent::PassByMutableReference{ from: from_ro, to: to_ro } => {
+            ExternalEvent::PassByMutableReference{ from: from_ro, to: to_ro, valid: valid_ro } => {
                 title = String::from("Pass by mutable reference");
                 (from_ro, to_ro) 
             },
-            ExternalEvent::PassByStaticReference{ from: from_ro, to: to_ro } => {
+            ExternalEvent::PassByStaticReference{ from: from_ro, to: to_ro, valid: valid_ro } => {
                 title = String::from("Pass by immutable reference");
                 (from_ro, to_ro)
             },
