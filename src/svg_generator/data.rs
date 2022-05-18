@@ -188,16 +188,18 @@ pub enum ExternalEvent {
     /* let binding, e.g.: let x = 1 */
     Bind {
         from: Option<ResourceAccessPoint>,
-        to: Option<ResourceAccessPoint>
+        to: Option<ResourceAccessPoint>,
+        valid: bool
     },
     Copy {
         from: Option<ResourceAccessPoint>,
-        to: Option<ResourceAccessPoint>
+        to: Option<ResourceAccessPoint>,
+        valid: bool
     },
     Move {
         from: Option<ResourceAccessPoint>,
         to: Option<ResourceAccessPoint>,
-        valid: Option<bool>
+        valid: bool
     },
     StaticBorrow {
         from: Option<ResourceAccessPoint>,
@@ -548,8 +550,8 @@ pub struct VisualizationData {
 #[allow(non_snake_case)]
 pub fn ResourceAccessPoint_extract (external_event : &ExternalEvent) -> (&Option<ResourceAccessPoint>, &Option<ResourceAccessPoint>){
     let (from, to) = match external_event {
-        ExternalEvent::Bind{from: from_ro, to: to_ro} => (from_ro, to_ro),
-        ExternalEvent::Copy{from: from_ro, to: to_ro} => (from_ro, to_ro),
+        ExternalEvent::Bind{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
+        ExternalEvent::Copy{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
         ExternalEvent::Move{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
         ExternalEvent::StaticBorrow{from: from_ro, to: to_ro} => (from_ro, to_ro),
         ExternalEvent::StaticDie{from: from_ro, to: to_ro} => (from_ro, to_ro),
@@ -850,12 +852,12 @@ impl Visualizable for VisualizationData {
                 maybe_append_event(self, &from_ro, Event::Move{to : to_ro.to_owned()}, &line_number);
             },
             // eg: let ro_to = 5;
-            ExternalEvent::Bind{from: from_ro, to: to_ro} => {
+            ExternalEvent::Bind{from: from_ro, to: to_ro, valid: valid_ro} => {
                 maybe_append_event(self, &to_ro, Event::Acquire{from : from_ro.to_owned()}, &line_number);
                 maybe_append_event(self, &from_ro, Event::Duplicate{to : to_ro.to_owned()}, &line_number);
             },
             // eg: let x : i64 = y as i64;
-            ExternalEvent::Copy{from: from_ro, to: to_ro} => {
+            ExternalEvent::Copy{from: from_ro, to: to_ro, valid: valid_ro} => {
                 maybe_append_event(self, &to_ro, Event::Copy{from : from_ro.to_owned()}, &line_number);
                 maybe_append_event(self, &from_ro, Event::Duplicate{to : to_ro.to_owned()}, &line_number);
             },

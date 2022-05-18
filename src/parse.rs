@@ -253,19 +253,22 @@ pub fn add_events(
             "Bind" => vd.append_external_event(
                 ExternalEvent::Bind{
                     from: get_resource(&vars, "None"),
-                    to: get_resource(&vars, field[1])
+                    to: get_resource(&vars, field[1]),
+                    valid: true
                 }, &(event.0 as usize)
             ),
             "Copy" => vd.append_external_event(
                 ExternalEvent::Copy{
                     from: get_resource(&vars, field[1]),
-                    to: get_resource(&vars, field[2])
+                    to: get_resource(&vars, field[2]),
+                    valid: true
                 }, &(event.0 as usize)
             ),
             "Move" => vd.append_external_event(
                 ExternalEvent::Move{
                     from: get_resource(&vars, field[1]),
-                    to: get_resource(&vars, field[2])
+                    to: get_resource(&vars, field[2]),
+                    valid: true
                 },
                 &(event.0 as usize)
             ),
@@ -321,7 +324,8 @@ pub fn add_events(
             "InitOwnerParam" => vd.append_external_event(
                 ExternalEvent::Move{
                     from: get_resource(&vars, "None"),
-                    to: get_resource(&vars, field[1])
+                    to: get_resource(&vars, field[1]),
+                    valid: true
                 },
                 &(event.0 as usize)
             ),

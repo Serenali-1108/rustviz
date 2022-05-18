@@ -427,11 +427,11 @@ fn render_arrows_string_external_events_version(
     for (line_number, external_event) in &visualization_data.external_events {
         let mut title = String::from("");
         let (from, to) = match external_event {
-            ExternalEvent::Bind{ from: from_ro, to: to_ro } => {
+            ExternalEvent::Bind{ from: from_ro, to: to_ro, valid: valid_ro } => {
                 title = String::from("Bind");
                 (from_ro, to_ro)
             },
-            ExternalEvent::Copy{ from: from_ro, to: to_ro } => {
+            ExternalEvent::Copy{ from: from_ro, to: to_ro, valid: valid_ro } => {
                 title = String::from("Copy");
                 (from_ro, to_ro)
             },
@@ -457,7 +457,7 @@ fn render_arrows_string_external_events_version(
             },
             ExternalEvent::PassByMutableReference{ from: from_ro, to: to_ro } => {
                 title = String::from("Pass by mutable reference");
-                (from_ro, to_ro)
+                (from_ro, to_ro) 
             },
             ExternalEvent::PassByStaticReference{ from: from_ro, to: to_ro } => {
                 title = String::from("Pass by immutable reference");
