@@ -939,10 +939,19 @@ impl Visualizable for VisualizationData {
         }
     }
 
-    
-    fn check_valid(&self, event: ExternalEvent) -> bool{
 
-        true
+    fn check_valid(&self, event: ExternalEvent) -> bool{
+        match event {
+            ExternalEvent::Move{from: from_ro, to: to_ro, valid: _} => {true},
+            ExternalEvent::Bind{from: from_ro, to: to_ro, valid: _} => {true},
+            ExternalEvent::Copy{from: from_ro, to: to_ro, valid: _} => {true},
+            ExternalEvent::StaticBorrow{from: from_ro, to: to_ro, valid: _} => {true},
+            ExternalEvent::MutableBorrow{from: from_ro, to: to_ro, valid: _} => {true},
+            ExternalEvent::PassByStaticReference{from: from_ro, to: to_ro, valid: _} => {true},
+            ExternalEvent::PassByMutableReference{from: from_ro, to: to_ro, valid: _} => {true},
+            _ => false
+        }
+        
     }
 }
 
