@@ -34,6 +34,8 @@ pub trait Visualizable {
     fn is_mutref(&self, hash: &u64) -> bool;
 
     fn calc_state(&self, previous_state: & State, event: & Event, event_line: usize, hash: &u64) -> State;
+
+    fn check_valid(&self, event: ExternalEvent) -> bool;
 }
 
 
@@ -554,15 +556,15 @@ pub struct VisualizationData {
 #[allow(non_snake_case)]
 pub fn ResourceAccessPoint_extract (external_event : &ExternalEvent) -> (&Option<ResourceAccessPoint>, &Option<ResourceAccessPoint>){
     let (from, to) = match external_event {
-        ExternalEvent::Bind{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
-        ExternalEvent::Copy{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
-        ExternalEvent::Move{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
-        ExternalEvent::StaticBorrow{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
+        ExternalEvent::Bind{from: from_ro, to: to_ro, valid: _} => (from_ro, to_ro),
+        ExternalEvent::Copy{from: from_ro, to: to_ro, valid: _} => (from_ro, to_ro),
+        ExternalEvent::Move{from: from_ro, to: to_ro, valid: _} => (from_ro, to_ro),
+        ExternalEvent::StaticBorrow{from: from_ro, to: to_ro, valid: _} => (from_ro, to_ro),
         ExternalEvent::StaticDie{from: from_ro, to: to_ro} => (from_ro, to_ro),
-        ExternalEvent::MutableBorrow{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
+        ExternalEvent::MutableBorrow{from: from_ro, to: to_ro, valid: _} => (from_ro, to_ro),
         ExternalEvent::MutableDie{from: from_ro, to: to_ro} => (from_ro, to_ro),
-        ExternalEvent::PassByMutableReference{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
-        ExternalEvent::PassByStaticReference{from: from_ro, to: to_ro, valid: valid_ro} => (from_ro, to_ro),
+        ExternalEvent::PassByMutableReference{from: from_ro, to: to_ro, valid: _} => (from_ro, to_ro),
+        ExternalEvent::PassByStaticReference{from: from_ro, to: to_ro, valid: _} => (from_ro, to_ro),
         _ => (&None, &None),
     };
     (from, to)
@@ -851,21 +853,21 @@ impl Visualizable for VisualizationData {
 
         match event {
             // eg let ro_to = String::from("");
-            ExternalEvent::Move{from: from_ro, to: to_ro, valid: valid_ro} => {
+            ExternalEvent::Move{from: from_ro, to: to_ro, valid: _} => {
                 maybe_append_event(self, &to_ro, Event::Acquire{from : from_ro.to_owned()}, &line_number);
                 maybe_append_event(self, &from_ro, Event::Move{to : to_ro.to_owned()}, &line_number);
             },
             // eg: let ro_to = 5;
-            ExternalEvent::Bind{from: from_ro, to: to_ro, valid: valid_ro} => {
+            ExternalEvent::Bind{from: from_ro, to: to_ro, valid: _} => {
                 maybe_append_event(self, &to_ro, Event::Acquire{from : from_ro.to_owned()}, &line_number);
                 maybe_append_event(self, &from_ro, Event::Duplicate{to : to_ro.to_owned()}, &line_number);
             },
             // eg: let x : i64 = y as i64;
-            ExternalEvent::Copy{from: from_ro, to: to_ro, valid: valid_ro} => {
+            ExternalEvent::Copy{from: from_ro, to: to_ro, valid: _} => {
                 maybe_append_event(self, &to_ro, Event::Copy{from : from_ro.to_owned()}, &line_number);
                 maybe_append_event(self, &from_ro, Event::Duplicate{to : to_ro.to_owned()}, &line_number);
             },
-            ExternalEvent::StaticBorrow{from: from_ro, to: to_ro, valid: valid_ro} => {
+            ExternalEvent::StaticBorrow{from: from_ro, to: to_ro, valid: _} => {
                 maybe_append_event(self, &from_ro, Event::StaticLend{to : to_ro.to_owned()}, &line_number);
                 if let Some(some_from_ro) = from_ro {
                     maybe_append_event(self, &to_ro, Event::StaticBorrow{from : some_from_ro.to_owned()}, &line_number);
@@ -875,7 +877,7 @@ impl Visualizable for VisualizationData {
                 maybe_append_event(self, &to_ro, Event::StaticReacquire{from : from_ro.to_owned()}, &line_number);
                 maybe_append_event(self, &from_ro, Event::StaticDie{to : to_ro.to_owned()}, &line_number);
             },
-            ExternalEvent::MutableBorrow{from: from_ro, to: to_ro, valid: valid_ro} => {
+            ExternalEvent::MutableBorrow{from: from_ro, to: to_ro, valid: _} => {
                 maybe_append_event(self, &from_ro, Event::MutableLend{to : to_ro.to_owned()}, &line_number);
                 if let Some(some_from_ro) = from_ro {
                     maybe_append_event(self, &to_ro, Event::MutableBorrow{from : some_from_ro.to_owned()}, &line_number);
@@ -886,7 +888,7 @@ impl Visualizable for VisualizationData {
                 maybe_append_event(self, &from_ro, Event::MutableDie{to : to_ro.to_owned()}, &line_number);
             },
             // TODO do we really need to add these events, since pass by ref does not change the state?
-            ExternalEvent::PassByStaticReference{from: from_ro, to: to_ro, valid: valid_ro} => {
+            ExternalEvent::PassByStaticReference{from: from_ro, to: to_ro, valid: _} => {
                 maybe_append_event(self, &from_ro.to_owned(), Event::StaticLend{to : to_ro.to_owned()}, &line_number);
                 if let Some(some_from_ro) = from_ro.to_owned() {
                     maybe_append_event(self, &to_ro.to_owned(), Event::StaticBorrow{from : some_from_ro.to_owned()}, &line_number);
@@ -897,7 +899,7 @@ impl Visualizable for VisualizationData {
                 maybe_append_event(self, &from_ro, Event::StaticReacquire{from : to_ro.to_owned()}, &line_number);
                 maybe_append_event(self, &to_ro, Event::StaticDie{to : from_ro.to_owned()}, &line_number);
             },
-            ExternalEvent::PassByMutableReference{from: from_ro, to: to_ro, valid: valid_ro} => {
+            ExternalEvent::PassByMutableReference{from: from_ro, to: to_ro, valid: _} => {
                 maybe_append_event(self, &from_ro, Event::MutableLend{to : to_ro.to_owned()}, &line_number);
                 if let Some(some_from_ro) = from_ro.to_owned() {
                     maybe_append_event(self, &to_ro, Event::MutableBorrow{from : some_from_ro.to_owned()}, &line_number);
@@ -935,6 +937,12 @@ impl Visualizable for VisualizationData {
                 }
             },
         }
+    }
+
+    
+    fn check_valid(&self, event: ExternalEvent) -> bool{
+
+        true
     }
 }
 
